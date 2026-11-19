@@ -148,6 +148,8 @@ final class PomodoroModel: ObservableObject {
 
     func select(_ p: Phase) { pause(); phase = p; remaining = total }
 
+    func resetCompleted() { completedFocus = 0 }
+
     func skip() { advance(notify: false) }
 
     private func tick() {
@@ -320,9 +322,20 @@ struct TimerView: View {
                 .font(.system(size: 9, weight: .bold))
                 .foregroundStyle(.secondary)
                 .background(Capsule().fill(.primary.opacity(0.07)))
-                Text("\(model.completedFocus) done")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
+                Button { model.resetCompleted() } label: {
+                    HStack(spacing: 3) {
+                        Text("\(model.completedFocus) done")
+                        if model.completedFocus > 0 {
+                            Image(systemName: "arrow.counterclockwise").font(.system(size: 8, weight: .bold))
+                        }
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .disabled(model.completedFocus == 0)
+                .help("Reset done count")
                 Spacer()
                 Button(action: openSettings) { Image(systemName: "gearshape") }
                     .buttonStyle(.plain)
